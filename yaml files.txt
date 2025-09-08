@@ -1,0 +1,82 @@
+# Pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: banti-pod
+  namespace: banti
+  labels:
+    app: nginx-app
+spec:
+  containers:
+    - name: nginx-app
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+
+# development.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-app
+  namespace: banti
+  labels:
+    app: retail-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: retail-app
+  template:
+    metadata:
+      labels:
+        app: retail-app
+    spec:
+      containers:
+        - name: my-container
+          image: banti24/organic-ghee:latest
+          ports:
+            - containerPort: 80
+
+# secret.yaml
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+  namespace: banti
+type: Opaque
+data:
+  username: YmFudGk=     
+  password: cGFzcw==      
+
+
+# configmap.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-map
+  namespace: banti
+data:
+  APP_ENV: "production"
+  APP_DEBUG: "false"
+  DATABASE_URL: "mysql://user:pass@db:3306/mydb"
+
+#service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: retail-app-service
+  namespace: banti
+spec:
+  selector:
+    app: retail-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+  type: NodePort
+
